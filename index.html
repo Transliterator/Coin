@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coin Toss Analyzer</title>
+    <style>
+        body {
+            font-family: 'Trebuchet MS', sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #f0f8ff;
+            color: #003366;
+        }
+        h1 {
+            font-size: 48px;
+            color: #FF4500;
+            margin-bottom: 20px;
+        }
+        input[type="number"] {
+            padding: 10px;
+            font-size: 18px;
+            width: 100px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #FF4500;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #e03e00;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .result {
+            display: inline-block;
+            width: 100px;
+            margin: 6px;
+            font-size: 18px;
+        }
+        .red {
+            color: red;
+        }
+        .dark-blue {
+            color: darkblue;
+            font-weight: bold;
+        }
+        .label {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Coin Toss Analyzer</h1>
+    <input type="number" id="numCycles" placeholder="Enter tosses" min="1" />
+    <button onclick="generateCoinTossStats()">Generate</button>
+
+    <div class="results">
+        <div class="label">Heads (1) Count</div>
+        <div id="headsCountRow"></div>
+        <div class="label">Tails (0) Count</div>
+        <div id="tailsCountRow"></div>
+        <div class="label">Probability of Heads (%)</div>
+        <div id="probabilityRow"></div>
+        <div class="label">Deviation from 50%</div>
+        <div id="deviationRow"></div>
+    </div>
+
+    <script>
+        function generateCoinTossStats() {
+            const numPoints = parseInt(document.getElementById('numCycles').value);
+            const headsRow = document.getElementById('headsCountRow');
+            const tailsRow = document.getElementById('tailsCountRow');
+            const probabilityRow = document.getElementById('probabilityRow');
+            const deviationRow = document.getElementById('deviationRow');
+
+            headsRow.innerHTML = '';
+            tailsRow.innerHTML = '';
+            probabilityRow.innerHTML = '';
+            deviationRow.innerHTML = '';
+
+            if (isNaN(numPoints) || numPoints <= 0) {
+                alert("Please enter a valid number of tosses.");
+                return;
+            }
+
+            let totalHeads = 0;
+            let totalDeviation = 0;
+
+            for (let j = 0; j < 10; j++) {
+                let heads = 0;
+                for (let i = 0; i < numPoints; i++) {
+                    if (Math.random() < 0.5) {
+                        // Tails (0)
+                    } else {
+                        heads++;
+                    }
+                }
+
+                const tails = numPoints - heads;
+                const probability = heads / numPoints;
+                const deviation = ((probability - 0.5) / 0.5) * 100;
+
+                headsRow.innerHTML += `<div class="result">${heads}</div>`;
+                tailsRow.innerHTML += `<div class="result">${tails}</div>`;
+                probabilityRow.innerHTML += `<div class="result">${(probability * 100).toFixed(2)}%</div>`;
+                const devClass = Math.abs(deviation) > 5 ? 'red' : '';
+                deviationRow.innerHTML += `<div class="result ${devClass}">${deviation.toFixed(2)}%</div>`;
+
+                totalHeads += heads;
+                totalDeviation += deviation;
+            }
+
+            const totalTosses = numPoints * 10;
+            const avgProbability = totalHeads / totalTosses;
+
+            headsRow.innerHTML += `<div class="result dark-blue">${(totalHeads / 10).toFixed(0)}</div>`;
+            tailsRow.innerHTML += `<div class="result dark-blue">${(totalTosses / 10 - totalHeads / 10).toFixed(0)}</div>`;
+            probabilityRow.innerHTML += `<div class="result dark-blue">${(avgProbability * 100).toFixed(2)}%</div>`;
+            deviationRow.innerHTML += `<div class="result dark-blue">${(totalDeviation / 10).toFixed(2)}%</div>`;
+        }
+    </script>
+</body>
+</html>
